@@ -57,7 +57,6 @@ extern "C" {
                                xml: *const libc::c_char,
                                flags: libc::c_uint)
                                -> sys::virStoragePoolPtr;
-    fn virStoragePoolLookupByID(c: virConnectPtr, id: libc::c_int) -> sys::virStoragePoolPtr;
     fn virStoragePoolLookupByName(c: virConnectPtr,
                                   id: *const libc::c_char)
                                   -> sys::virStoragePoolPtr;
@@ -194,16 +193,6 @@ impl StoragePool {
             let ptr = virStoragePoolCreateXML(conn.as_ptr(),
                                               string_to_c_chars!(xml),
                                               flags as libc::c_uint);
-            if ptr.is_null() {
-                return Err(Error::new());
-            }
-            return Ok(StoragePool::new(ptr));
-        }
-    }
-
-    pub fn lookup_by_id(conn: &Connect, id: u32) -> Result<StoragePool, Error> {
-        unsafe {
-            let ptr = virStoragePoolLookupByID(conn.as_ptr(), id as libc::c_int);
             if ptr.is_null() {
                 return Err(Error::new());
             }
